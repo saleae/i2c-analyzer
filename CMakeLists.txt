@@ -21,9 +21,9 @@ add_library(i2c_analyzer SHARED ${SOURCES})
 target_link_libraries(i2c_analyzer PRIVATE Saleae::AnalyzerSDK)
 
 if(MSVC)
-    install(TARGETS i2c_analyzer RUNTIME DESTINATION ".")
+    install(TARGETS i2c_analyzer RUNTIME DESTINATION "Analyzers")
 else()
-    install(TARGETS i2c_analyzer LIBRARY DESTINATION ".")
+    install(TARGETS i2c_analyzer LIBRARY DESTINATION "Analyzers")
 endif()
 
 set_post_build_destination(i2c_analyzer)
