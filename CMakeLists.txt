@@ -25,3 +25,5 @@ if(MSVC)
 else()
     install(TARGETS i2c_analyzer LIBRARY DESTINATION ".")
 endif()
+
+set_post_build_destination(i2c_analyzer)
