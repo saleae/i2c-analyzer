@@ -6,7 +6,7 @@
 #include "I2cSimulationDataGenerator.h"
 
 class I2cAnalyzerSettings;
-class ANALYZER_EXPORT I2cAnalyzer : public Analyzer2
+class I2cAnalyzer : public Analyzer2
 {
 public:
 	I2cAnalyzer();
