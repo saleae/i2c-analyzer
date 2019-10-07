@@ -44,7 +44,7 @@ protected: //vars
 	//Serial analysis vars:
 	U32 mSampleRateHz;
 	bool mNeedAddress;
-	std::vector<U64> mArrowLocataions;
+	std::vector<U64> mArrowLocations;
 
 #pragma warning( pop )
 };
