@@ -121,14 +121,17 @@ bool I2cAnalyzer::GetBit( BitState& bit_state, U64& sck_rising_edge )
         if( mSda->DoMoreTransitionsExistInCurrentData() == true )
         {
             // there ARE some SDA transtions, let's double check to make sure there's still no SDA activity
-            if( mScl->DoMoreTransitionsExistInCurrentData() == true )
+            auto next_data_edge = mSda->GetSampleOfNextEdge();
+            if( mScl->WouldAdvancingToAbsPositionCauseTransition( next_data_edge - 1 ) )
+            {
                 break;
+            }
 
             // ok, for sure we can advance to the next SDA edge without running past any SCL events.
             mSda->AdvanceToNextEdge();
+
             RecordStartStopBit();
             result = false;
-            // return result;
         }
     }
 
@@ -162,12 +165,11 @@ bool I2cAnalyzer::GetBitPartOne( BitState& bit_state, U64& sck_rising_edge, U64&
         if( mSda->DoMoreTransitionsExistInCurrentData() == true )
         {
             // there ARE some SDA transtions, let's double check to make sure there's still no SDA activity
-            if( mScl->DoMoreTransitionsExistInCurrentData() == true )
+            auto next_data_edge = mSda->GetSampleOfNextEdge();
+            if( mScl->WouldAdvancingToAbsPositionCauseTransition( next_data_edge - 1 ) )
             {
-                if( mScl->GetSampleOfNextEdge() < mSda->GetSampleOfNextEdge() )
-                    break; // there is not a stop or start condition here, everything is normal - we should jump out now.
+                break;
             }
-
 
             // ok, for sure we can advance to the next SDA edge without running past any SCL events.
             mSda->AdvanceToNextEdge();
