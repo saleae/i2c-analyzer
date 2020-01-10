@@ -39,11 +39,11 @@ void I2cAnalyzer::WorkerThread()
 
 void I2cAnalyzer::GetByte()
 {
-    mArrowLocataions.clear();
+    mArrowLocations.clear();
     U64 value;
     DataBuilder byte;
     byte.Reset( &value, AnalyzerEnums::MsbFirst, 8 );
-    U64 starting_stample = 0;
+    U64 starting_sample = 0;
     U64 potential_ending_sample = 0;
 
     for( U32 i = 0; i < 8; i++ )
@@ -54,11 +54,11 @@ void I2cAnalyzer::GetByte()
         result &= GetBitPartTwo();
         if( result == true )
         {
-            mArrowLocataions.push_back( scl_rising_edge );
+            mArrowLocations.push_back( scl_rising_edge );
             byte.AddBit( bit_state );
 
             if( i == 0 )
-                starting_stample = scl_rising_edge;
+                starting_sample = scl_rising_edge;
         }
         else
         {
@@ -72,7 +72,7 @@ void I2cAnalyzer::GetByte()
     bool result = GetBitPartOne( ack_bit_state, scl_rising_edge, potential_ending_sample ); // GetBit( ack_bit_state, scl_rising_edge );
 
     Frame frame;
-    frame.mStartingSampleInclusive = starting_stample;
+    frame.mStartingSampleInclusive = starting_sample;
     frame.mEndingSampleInclusive = result ? potential_ending_sample : last_valid_sample;
     frame.mData1 = U8( value );
 
@@ -94,9 +94,9 @@ void I2cAnalyzer::GetByte()
     }
     mResults->AddFrame( frame );
 
-    U32 count = mArrowLocataions.size();
+    U32 count = mArrowLocations.size();
     for( U32 i = 0; i < count; i++ )
-        mResults->AddMarker( mArrowLocataions[ i ], AnalyzerResults::UpArrow, mSettings->mSclChannel );
+        mResults->AddMarker( mArrowLocations[ i ], AnalyzerResults::UpArrow, mSettings->mSclChannel );
 
     mResults->CommitResults();
 
