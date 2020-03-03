@@ -1,4 +1,4 @@
-#ifndef SERIAL_ANALYZER_H
+﻿#ifndef SERIAL_ANALYZER_H
 #define SERIAL_ANALYZER_H
 
 #include <Analyzer.h>

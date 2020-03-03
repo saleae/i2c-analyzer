@@ -43,7 +43,7 @@ void I2cAnalyzer::GetByte()
     U64 value;
     DataBuilder byte;
     byte.Reset( &value, AnalyzerEnums::MsbFirst, 8 );
-    U64 starting_stample = 0;
+    U64 starting_sample = 0;
     U64 potential_ending_sample = 0;
 
     for( U32 i = 0; i < 8; i++ )
@@ -58,7 +58,7 @@ void I2cAnalyzer::GetByte()
             byte.AddBit( bit_state );
 
             if( i == 0 )
-                starting_stample = scl_rising_edge;
+                starting_sample = scl_rising_edge;
         }
         else
         {
@@ -71,8 +71,11 @@ void I2cAnalyzer::GetByte()
     S64 last_valid_sample = mScl->GetSampleNumber();
     bool result = GetBitPartOne( ack_bit_state, scl_rising_edge, potential_ending_sample ); // GetBit( ack_bit_state, scl_rising_edge );
 
+    FrameV2 framev2;
+    char* framev2Type = nullptr;
+
     Frame frame;
-    frame.mStartingSampleInclusive = starting_stample;
+    frame.mStartingSampleInclusive = starting_sample;
     frame.mEndingSampleInclusive = result ? potential_ending_sample : last_valid_sample;
     frame.mData1 = U8( value );
 
@@ -87,16 +90,24 @@ void I2cAnalyzer::GetByte()
     {
         mNeedAddress = false;
         frame.mType = I2cAddress;
+        framev2Type = "address";
+        framev2.AddByte( "address", value );
     }
     else
     {
         frame.mType = I2cData;
+        framev2Type = "data";
+        framev2.AddByte( "data", value );
     }
+
     mResults->AddFrame( frame );
+    mResults->AddFrameV2( framev2, framev2Type, starting_sample, result ? potential_ending_sample + 1 : last_valid_sample + 1 );
 
     U32 count = mArrowLocataions.size();
     for( U32 i = 0; i < count; i++ )
+    {
         mResults->AddMarker( mArrowLocataions[ i ], AnalyzerResults::UpArrow, mSettings->mSclChannel );
+    }
 
     mResults->CommitResults();
 
@@ -218,10 +229,14 @@ bool I2cAnalyzer::GetBitPartTwo()
 
 void I2cAnalyzer::RecordStartStopBit()
 {
-    if( mSda->GetBitState() == BIT_LOW )
+    bool start = mSda->GetBitState() == BIT_LOW;
+    if( start )
     {
         // negedge -> START / restart
         mResults->AddMarker( mSda->GetSampleNumber(), AnalyzerResults::Start, mSettings->mSdaChannel );
+
+        FrameV2 framev2;
+        mResults->AddFrameV2( framev2, "start", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1 );
     }
     else
     {
@@ -232,6 +247,12 @@ void I2cAnalyzer::RecordStartStopBit()
     mNeedAddress = true;
     mResults->CommitPacketAndStartNewPacket();
     mResults->CommitResults();
+
+    if( !start )
+    {
+        FrameV2 framev2;
+        mResults->AddFrameV2( framev2, "stop", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1 );
+    }
 }
 
 void I2cAnalyzer::AdvanceToStartBit()

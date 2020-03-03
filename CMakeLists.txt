@@ -4,6 +4,8 @@ project(i2c_analyzer)
 # custom CMake Modules are located in the cmake directory.
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+add_definitions( -DLOGIC2 )
+
 include(ExternalAnalyzerSDK)
 
 set(SOURCES 
