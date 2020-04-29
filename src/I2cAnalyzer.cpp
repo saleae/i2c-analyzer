@@ -236,7 +236,7 @@ void I2cAnalyzer::RecordStartStopBit()
         mResults->AddMarker( mSda->GetSampleNumber(), AnalyzerResults::Start, mSettings->mSdaChannel );
 
         FrameV2 framev2;
-        mResults->AddFrameV2( framev2, "start", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1 );
+        mResults->AddFrameV2Marker( framev2, "start", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1, AnalyzerResults::Start );
     }
     else
     {
@@ -251,7 +251,7 @@ void I2cAnalyzer::RecordStartStopBit()
     if( !start )
     {
         FrameV2 framev2;
-        mResults->AddFrameV2( framev2, "stop", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1 );
+        mResults->AddFrameV2Marker( framev2, "stop", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1, AnalyzerResults::Stop );
     }
 }
 
