@@ -6,7 +6,7 @@
 I2cAnalyzerSettings::I2cAnalyzerSettings()
 :	mSdaChannel( UNDEFINED_CHANNEL ),
 	mSclChannel( UNDEFINED_CHANNEL ),
-	mAddressDisplay( YES_DIRECTION_8 )
+	mAddressDisplay( NO_DIRECTION_7 )
 {
 	mSdaChannelInterface.reset( new AnalyzerSettingInterfaceChannel() );
 	mSdaChannelInterface->SetTitleAndTooltip( "SDA", "Serial Data Line" );

@@ -39,7 +39,7 @@ void I2cAnalyzer::WorkerThread()
 
 void I2cAnalyzer::GetByte()
 {
-    mArrowLocataions.clear();
+    mArrowLocations.clear();
     U64 value;
     DataBuilder byte;
     byte.Reset( &value, AnalyzerEnums::MsbFirst, 8 );
@@ -54,7 +54,7 @@ void I2cAnalyzer::GetByte()
         result &= GetBitPartTwo();
         if( result == true )
         {
-            mArrowLocataions.push_back( scl_rising_edge );
+            mArrowLocations.push_back( scl_rising_edge );
             byte.AddBit( bit_state );
 
             if( i == 0 )
@@ -103,10 +103,10 @@ void I2cAnalyzer::GetByte()
     mResults->AddFrame( frame );
     mResults->AddFrameV2( framev2, framev2Type, starting_sample, result ? potential_ending_sample + 1 : last_valid_sample + 1 );
 
-    U32 count = mArrowLocataions.size();
+    U32 count = mArrowLocations.size();
     for( U32 i = 0; i < count; i++ )
     {
-        mResults->AddMarker( mArrowLocataions[ i ], AnalyzerResults::UpArrow, mSettings->mSclChannel );
+        mResults->AddMarker( mArrowLocations[ i ], AnalyzerResults::UpArrow, mSettings->mSclChannel );
     }
 
     mResults->CommitResults();
