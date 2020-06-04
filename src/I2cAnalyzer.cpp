@@ -85,24 +85,26 @@ void I2cAnalyzer::GetByte()
         framev2.AddString( "error", "missing ack/nak" );
         frame.mFlags = I2C_MISSING_FLAG_ACK;
     }
-    else if( ack_bit_state == BIT_HIGH )
-    {
-        frame.mFlags = DISPLAY_AS_WARNING_FLAG;
-        framev2.AddBoolean( "ack", false );
-    }
     else
     {
-        frame.mFlags = I2C_FLAG_ACK;
-        framev2.AddBoolean( "ack", true );
+        bool ack = ack_bit_state == BIT_LOW;
+
+        // true == ack, false == nak
+        framev2.AddBoolean( "ack", ack );
+        if( ack )
+        {
+            frame.mFlags = I2C_FLAG_ACK;
+        }
     }
 
     if( mNeedAddress == true && result == true ) // if result is false, then we have already recorded a stop bit and toggled mNeedAddress
     {
         mNeedAddress = false;
-        bool is_read = value & 0x80;
+        bool is_read = value & 0x01;
+        U8 address = value >> 1;
         frame.mType = I2cAddress;
         framev2Type = "address";
-        framev2.AddByte( "address", value & 0x7F );
+        framev2.AddByte( "address", address );
         framev2.AddBoolean( "read", is_read );
     }
     else
