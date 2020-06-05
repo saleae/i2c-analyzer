@@ -78,7 +78,6 @@ void I2cAnalyzer::GetByte()
     frame.mStartingSampleInclusive = starting_sample;
     frame.mEndingSampleInclusive = result ? potential_ending_sample : last_valid_sample;
     frame.mData1 = U8( value );
-    bool did_ack{ false };
 
     if( !result )
     {
