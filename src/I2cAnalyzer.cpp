@@ -80,18 +80,31 @@ void I2cAnalyzer::GetByte()
     frame.mData1 = U8( value );
 
     if( !result )
+    {
+        framev2.AddString( "error", "missing ack/nak" );
         frame.mFlags = I2C_MISSING_FLAG_ACK;
-    else if( ack_bit_state == BIT_HIGH )
-        frame.mFlags = DISPLAY_AS_WARNING_FLAG;
+    }
     else
-        frame.mFlags = I2C_FLAG_ACK;
+    {
+        bool ack = ack_bit_state == BIT_LOW;
+
+        // true == ack, false == nak
+        framev2.AddBoolean( "ack", ack );
+        if( ack )
+        {
+            frame.mFlags = I2C_FLAG_ACK;
+        }
+    }
 
     if( mNeedAddress == true && result == true ) // if result is false, then we have already recorded a stop bit and toggled mNeedAddress
     {
         mNeedAddress = false;
+        bool is_read = value & 0x01;
+        U8 address = value >> 1;
         frame.mType = I2cAddress;
         framev2Type = "address";
-        framev2.AddByte( "address", value );
+        framev2.AddByte( "address", address );
+        framev2.AddBoolean( "read", is_read );
     }
     else
     {
@@ -101,7 +114,7 @@ void I2cAnalyzer::GetByte()
     }
 
     mResults->AddFrame( frame );
-    mResults->AddFrameV2( framev2, framev2Type, starting_sample, result ? potential_ending_sample + 1 : last_valid_sample + 1 );
+    mResults->AddFrameV2( framev2, framev2Type, starting_sample, result ? potential_ending_sample : last_valid_sample );
 
     U32 count = mArrowLocations.size();
     for( U32 i = 0; i < count; i++ )
