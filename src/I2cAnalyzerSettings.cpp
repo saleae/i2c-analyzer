@@ -18,7 +18,7 @@ I2cAnalyzerSettings::I2cAnalyzerSettings()
 
 	mAddressDisplayInterface.reset( new AnalyzerSettingInterfaceNumberList() );
 	mAddressDisplayInterface->SetTitleAndTooltip( "Address Display", "Specify how you would like the I2C address to be displayed." );
-	mAddressDisplayInterface->AddNumber( YES_DIRECTION_8, "8-bit, read/write bit included [default]", "Displays the address as it would be seen in a microcontroller register (with the read/write bit included)" );
+	mAddressDisplayInterface->AddNumber( YES_DIRECTION_8, "8-bit, read/write bit included", "Displays the address as it would be seen in a microcontroller register (with the read/write bit included)" );
 	mAddressDisplayInterface->AddNumber( NO_DIRECTION_8, "8-bit, read/write bit set as 0", "Displays the I2C address as an 8 bit number, but uses 0 in place of the read/write bit" );
 	mAddressDisplayInterface->AddNumber( NO_DIRECTION_7, "7-bit, address bits only", "Displays the I2C address as a 7-bit number" );
 	mAddressDisplayInterface->SetNumber( mAddressDisplay );
