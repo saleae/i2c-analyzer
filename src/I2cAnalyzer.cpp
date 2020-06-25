@@ -282,7 +282,8 @@ void I2cAnalyzer::AdvanceToStartBit()
                 break;
         }
     }
-    mResults->AddMarker( mSda->GetSampleNumber(), AnalyzerResults::Start, mSettings->mSdaChannel );
+
+    RecordStartStopBit();
 }
 
 bool I2cAnalyzer::NeedsRerun()
