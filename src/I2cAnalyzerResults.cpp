@@ -34,18 +34,7 @@ void I2cAnalyzerResults::GenerateBubbleText( U64 frame_index, Channel& /*channel
     if( frame.mType == I2cAddress )
     {
         char number_str[ 128 ];
-        switch( mSettings->mAddressDisplay )
-        {
-        case NO_DIRECTION_7:
-            AnalyzerHelpers::GetNumberString( frame.mData1 >> 1, display_base, 7, number_str, 128 );
-            break;
-        case NO_DIRECTION_8:
-            AnalyzerHelpers::GetNumberString( frame.mData1 & 0xFE, display_base, 8, number_str, 128 );
-            break;
-        case YES_DIRECTION_8:
-            AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, number_str, 128 );
-            break;
-        }
+        AnalyzerHelpers::GetNumberString( frame.mData1 >> 1, display_base, 7, number_str, 128 );
 
         I2cDirection direction;
         if( ( frame.mData1 & 0x1 ) != 0 )
@@ -127,18 +116,7 @@ void I2cAnalyzerResults::GenerateExportFile( const char* file, DisplayBase displ
 
         if( frame.mType == I2cAddress )
         {
-            switch( mSettings->mAddressDisplay )
-            {
-            case NO_DIRECTION_7:
-                AnalyzerHelpers::GetNumberString( frame.mData1 >> 1, display_base, 7, address, 128 );
-                break;
-            case NO_DIRECTION_8:
-                AnalyzerHelpers::GetNumberString( frame.mData1 & 0xFE, display_base, 8, address, 128 );
-                break;
-            case YES_DIRECTION_8:
-                AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, address, 128 );
-                break;
-            }
+            AnalyzerHelpers::GetNumberString( frame.mData1 >> 1, display_base, 7, address, 128 );
             if( ( frame.mData1 & 0x1 ) != 0 )
                 snprintf( rw, sizeof( rw ), "Read" );
             else
@@ -219,18 +197,7 @@ void I2cAnalyzerResults::GenerateFrameTabularText( U64 frame_index, DisplayBase 
     if( frame.mType == I2cAddress )
     {
         char number_str[ 128 ];
-        switch( mSettings->mAddressDisplay )
-        {
-        case NO_DIRECTION_7:
-            AnalyzerHelpers::GetNumberString( frame.mData1 >> 1, display_base, 7, number_str, 128 );
-            break;
-        case NO_DIRECTION_8:
-            AnalyzerHelpers::GetNumberString( frame.mData1 & 0xFE, display_base, 8, number_str, 128 );
-            break;
-        case YES_DIRECTION_8:
-            AnalyzerHelpers::GetNumberString( frame.mData1, display_base, 8, number_str, 128 );
-            break;
-        }
+        AnalyzerHelpers::GetNumberString( frame.mData1 >> 1, display_base, 7, number_str, 128 );
 
         I2cDirection direction;
         if( ( frame.mData1 & 0x1 ) != 0 )
