@@ -4,7 +4,7 @@
 #include <cstring>
 
 I2cAnalyzerSettings::I2cAnalyzerSettings()
-    : mSdaChannel( UNDEFINED_CHANNEL ), mSclChannel( UNDEFINED_CHANNEL ), mAddressDisplay( NO_DIRECTION_7 )
+    : mSdaChannel( UNDEFINED_CHANNEL ), mSclChannel( UNDEFINED_CHANNEL )
 {
     mSdaChannelInterface.reset( new AnalyzerSettingInterfaceChannel() );
     mSdaChannelInterface->SetTitleAndTooltip( "SDA", "Serial Data Line" );
@@ -61,7 +61,6 @@ void I2cAnalyzerSettings::LoadSettings( const char* settings )
 
     text_archive >> mSdaChannel;
     text_archive >> mSclChannel;
-    text_archive >> *( U32* )&mAddressDisplay;
 
     ClearChannels();
     AddChannel( mSdaChannel, "SDA", true );
@@ -77,7 +76,6 @@ const char* I2cAnalyzerSettings::SaveSettings()
     text_archive << "SaleaeI2CAnalyzer";
     text_archive << mSdaChannel;
     text_archive << mSclChannel;
-    text_archive << mAddressDisplay;
 
     return SetReturnString( text_archive.GetString() );
 }
