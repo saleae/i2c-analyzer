@@ -14,19 +14,8 @@ I2cAnalyzerSettings::I2cAnalyzerSettings()
     mSclChannelInterface->SetTitleAndTooltip( "SCL", "Serial Clock Line" );
     mSclChannelInterface->SetChannel( mSclChannel );
 
-    mAddressDisplayInterface.reset( new AnalyzerSettingInterfaceNumberList() );
-    mAddressDisplayInterface->SetTitleAndTooltip( "Address Display", "Specify how you would like the I2C address to be displayed." );
-    mAddressDisplayInterface->AddNumber(
-        YES_DIRECTION_8, "8-bit, read/write bit included",
-        "Displays the address as it would be seen in a microcontroller register (with the read/write bit included)" );
-    mAddressDisplayInterface->AddNumber( NO_DIRECTION_8, "8-bit, read/write bit set as 0",
-                                         "Displays the I2C address as an 8 bit number, but uses 0 in place of the read/write bit" );
-    mAddressDisplayInterface->AddNumber( NO_DIRECTION_7, "7-bit, address bits only", "Displays the I2C address as a 7-bit number" );
-    mAddressDisplayInterface->SetNumber( mAddressDisplay );
-
     AddInterface( mSdaChannelInterface.get() );
     AddInterface( mSclChannelInterface.get() );
-    AddInterface( mAddressDisplayInterface.get() );
 
     // AddExportOption( 0, "Export as text/csv file", "text (*.txt);;csv (*.csv)" );
     AddExportOption( 0, "Export as text/csv file" );
@@ -52,7 +41,6 @@ bool I2cAnalyzerSettings::SetSettingsFromInterfaces()
 
     mSdaChannel = mSdaChannelInterface->GetChannel();
     mSclChannel = mSclChannelInterface->GetChannel();
-    mAddressDisplay = AddressDisplay( U32( mAddressDisplayInterface->GetNumber() ) );
 
     ClearChannels();
     AddChannel( mSdaChannel, "SDA", true );
@@ -98,5 +86,4 @@ void I2cAnalyzerSettings::UpdateInterfacesFromSettings()
 {
     mSdaChannelInterface->SetChannel( mSdaChannel );
     mSclChannelInterface->SetChannel( mSclChannel );
-    mAddressDisplayInterface->SetNumber( mAddressDisplay );
 }

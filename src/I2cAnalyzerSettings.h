@@ -36,12 +36,14 @@ class I2cAnalyzerSettings : public AnalyzerSettings
 
     Channel mSdaChannel;
     Channel mSclChannel;
-    enum AddressDisplay mAddressDisplay;
+    enum AddressDisplay mAddressDisplay
+    {
+        NO_DIRECTION_7
+    };
 
   protected:
     std::auto_ptr<AnalyzerSettingInterfaceChannel> mSdaChannelInterface;
     std::auto_ptr<AnalyzerSettingInterfaceChannel> mSclChannelInterface;
-    std::auto_ptr<AnalyzerSettingInterfaceNumberList> mAddressDisplayInterface;
 };
 
 #endif // I2C_ANALYZER_SETTINGS
