@@ -3,8 +3,7 @@
 #include <AnalyzerHelpers.h>
 #include <cstring>
 
-I2cAnalyzerSettings::I2cAnalyzerSettings()
-    : mSdaChannel( UNDEFINED_CHANNEL ), mSclChannel( UNDEFINED_CHANNEL )
+I2cAnalyzerSettings::I2cAnalyzerSettings() : mSdaChannel( UNDEFINED_CHANNEL ), mSclChannel( UNDEFINED_CHANNEL )
 {
     mSdaChannelInterface.reset( new AnalyzerSettingInterfaceChannel() );
     mSdaChannelInterface->SetTitleAndTooltip( "SDA", "Serial Data Line" );
