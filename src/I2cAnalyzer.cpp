@@ -5,6 +5,7 @@
 I2cAnalyzer::I2cAnalyzer() : Analyzer2(), mSettings( new I2cAnalyzerSettings() ), mSimulationInitilized( false )
 {
     SetAnalyzerSettings( mSettings.get() );
+    UseFrameV2();
 }
 
 I2cAnalyzer::~I2cAnalyzer()
