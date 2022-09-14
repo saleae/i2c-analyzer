@@ -5,6 +5,7 @@
 I2cAnalyzer::I2cAnalyzer() : Analyzer2(), mSettings( new I2cAnalyzerSettings() ), mSimulationInitilized( false )
 {
     SetAnalyzerSettings( mSettings.get() );
+    UseFrameV2();
 }
 
 I2cAnalyzer::~I2cAnalyzer()
@@ -71,32 +72,56 @@ void I2cAnalyzer::GetByte()
     S64 last_valid_sample = mScl->GetSampleNumber();
     bool result = GetBitPartOne( ack_bit_state, scl_rising_edge, potential_ending_sample ); // GetBit( ack_bit_state, scl_rising_edge );
 
+    FrameV2 framev2;
+    char* framev2Type = nullptr;
+
     Frame frame;
     frame.mStartingSampleInclusive = starting_sample;
     frame.mEndingSampleInclusive = result ? potential_ending_sample : last_valid_sample;
     frame.mData1 = U8( value );
 
     if( !result )
+    {
+        framev2.AddString( "error", "missing ack/nak" );
         frame.mFlags = I2C_MISSING_FLAG_ACK;
-    else if( ack_bit_state == BIT_HIGH )
-        frame.mFlags = DISPLAY_AS_WARNING_FLAG;
+    }
     else
-        frame.mFlags = I2C_FLAG_ACK;
+    {
+        bool ack = ack_bit_state == BIT_LOW;
+
+        // true == ack, false == nak
+        framev2.AddBoolean( "ack", ack );
+        if( ack )
+        {
+            frame.mFlags = I2C_FLAG_ACK;
+        }
+    }
 
     if( mNeedAddress == true && result == true ) // if result is false, then we have already recorded a stop bit and toggled mNeedAddress
     {
         mNeedAddress = false;
+        bool is_read = value & 0x01;
+        U8 address = value >> 1;
         frame.mType = I2cAddress;
+        framev2Type = "address";
+        framev2.AddByte( "address", address );
+        framev2.AddBoolean( "read", is_read );
     }
     else
     {
         frame.mType = I2cData;
+        framev2Type = "data";
+        framev2.AddByte( "data", value );
     }
+
     mResults->AddFrame( frame );
+    mResults->AddFrameV2( framev2, framev2Type, starting_sample, result ? potential_ending_sample : last_valid_sample );
 
     U32 count = mArrowLocations.size();
     for( U32 i = 0; i < count; i++ )
+    {
         mResults->AddMarker( mArrowLocations[ i ], AnalyzerResults::UpArrow, mSettings->mSclChannel );
+    }
 
     mResults->CommitResults();
 
@@ -218,10 +243,14 @@ bool I2cAnalyzer::GetBitPartTwo()
 
 void I2cAnalyzer::RecordStartStopBit()
 {
-    if( mSda->GetBitState() == BIT_LOW )
+    bool start = mSda->GetBitState() == BIT_LOW;
+    if( start )
     {
         // negedge -> START / restart
         mResults->AddMarker( mSda->GetSampleNumber(), AnalyzerResults::Start, mSettings->mSdaChannel );
+
+        FrameV2 framev2;
+        mResults->AddFrameV2( framev2, "start", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1 );
     }
     else
     {
@@ -232,6 +261,12 @@ void I2cAnalyzer::RecordStartStopBit()
     mNeedAddress = true;
     mResults->CommitPacketAndStartNewPacket();
     mResults->CommitResults();
+
+    if( !start )
+    {
+        FrameV2 framev2;
+        mResults->AddFrameV2( framev2, "stop", mSda->GetSampleNumber(), mSda->GetSampleNumber() + 1 );
+    }
 }
 
 void I2cAnalyzer::AdvanceToStartBit()
@@ -248,7 +283,8 @@ void I2cAnalyzer::AdvanceToStartBit()
                 break;
         }
     }
-    mResults->AddMarker( mSda->GetSampleNumber(), AnalyzerResults::Start, mSettings->mSdaChannel );
+
+    RecordStartStopBit();
 }
 
 bool I2cAnalyzer::NeedsRerun()
