@@ -42,7 +42,7 @@ jobs:
       with:
         name: macos_arm64
         path: ${{github.workspace}}/build/arm64/Analyzers/*.so
-  linux:
+  linux-x86_64:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -55,13 +55,26 @@ jobs:
           -w /app \
           ghcr.io/saleae/analyzer-build-image:latest \
           bash -c 'cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build'
-    - name: Upload Linux build
+    - name: Upload Linux x86_64 build
       uses: actions/upload-artifact@v4
       with:
-        name: linux
+        name: linux-x86_64
+        path: ${{github.workspace}}/build/Analyzers/*.so
+  linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: |
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release
+        cmake --build ${{github.workspace}}/build
+    - name: Upload Linux arm64 build
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-arm64
         path: ${{github.workspace}}/build/Analyzers/*.so
   publish:
-    needs: [windows, macos, linux]
+    needs: [windows, macos, linux-x86_64, linux-arm64]
     runs-on: ubuntu-latest
     steps:
     - name: download individual builds
